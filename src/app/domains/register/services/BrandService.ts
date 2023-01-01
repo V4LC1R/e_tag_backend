@@ -1,5 +1,5 @@
 import { Brands } from "@prisma/client"
-import { prisma } from "../../../suports/prismaClient"
+import { prisma } from "@prismaClient/client"
 
 type BrandServiceData={
   id?: number

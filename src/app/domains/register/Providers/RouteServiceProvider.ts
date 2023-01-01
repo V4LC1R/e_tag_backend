@@ -13,6 +13,7 @@ export class RegisterServiceProvider implements RouterProviderInterface{
 
     register(){
         this.routes.use('/brand/',(req,res,next)=>{next()},BrandRouter())
+        
     }
 
     getRoutes(): Router {

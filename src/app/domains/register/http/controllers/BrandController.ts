@@ -11,6 +11,7 @@ export class BrandController {
           const brands = await brandService.getAll();
 
           return res.status(200).json(brands)
+          
         } catch (e) {
           console.log(e)
           return res.status(500).json({message:'Err to ',err:e})
