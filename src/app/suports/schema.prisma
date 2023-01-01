@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../src/app/suports"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Brands {
+  id Int @id @default(autoincrement())
+  name_brand String @db.VarChar(256) 
+  prefix String @db.VarChar(256)
+  class Int // 1 - cars | 2 - products
+
+  products Products[]
+  vehicles Vehicles[]
+  imagesBrands ImagesToBrads[]
+}
+
+model Vehicles{
+  id Int @id @default(autoincrement())
+  name_vehicles String @db.VarChar(256)
+  id_brand Int
+  description String? @db.VarChar(256)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand Brands @relation(fields: [id_brand],references: [id])
+
+  imagesVehicles ImagesToVehicles[]
+  productsVehicle ProductsToVehicle[]
+}
+
+model Products{
+  id Int @id @default(autoincrement())
+  name_product String @db.VarChar(256)
+  id_brand Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  brand Brands @relation(fields: [id_brand],references: [id])
+
+  imagesProducts ImagesToProducts[]
+  productsVehicle ProductsToVehicle[]
+}
+
+model Images{
+  id Int @id @default(autoincrement())
+  url String
+  is_main Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  imagesProducts ImagesToProducts[]
+  imagesVehicles ImagesToVehicles[]
+  imagesBrands  ImagesToBrads[]
+}
+
+model ImagesToProducts{
+  id Int @default(autoincrement())
+  id_image Int
+  id_product Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  image Images @relation(fields: [id_image],references: [id])
+  product Products @relation(fields: [id_product],references: [id])
+
+  @@id([id_image,id_product])
+
+}
+
+model ImagesToVehicles{
+  id Int @default(autoincrement())
+  id_image Int
+  id_vehicle Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  image Images @relation(fields: [id_image],references: [id])
+  vehicles Vehicles @relation(fields: [id_vehicle],references: [id])
+
+  @@id([id_image,id_vehicle])
+}
+
+model ImagesToBrads{
+  id Int @default(autoincrement())
+  id_image Int
+  id_brand Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  image Images @relation(fields: [id_image],references: [id])
+  brand Brands @relation(fields: [id_brand],references: [id])
+
+  @@id([id_image,id_brand])
+}
+
+model ProductsToVehicle{
+  id Int @default(autoincrement())
+  id_product Int
+  id_vehicle Int
+  description String? @db.VarChar(256)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Products @relation(fields: [id_product],references: [id])
+  vehicles Vehicles @relation(fields: [id_vehicle],references: [id])
+
+  @@id([id_product,id_vehicle])
+}
