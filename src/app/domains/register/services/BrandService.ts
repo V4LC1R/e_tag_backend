@@ -9,7 +9,7 @@ type BrandServiceData={
 }
 
 export class BrandService{
-    async create({name,prefix,classType}:BrandServiceData):Promise<Brands | Error>{
+    async create({name,prefix,classType}:BrandServiceData):Promise<Brands>{
         try{
 
             const brand = await prisma.brands.create({data:{
@@ -27,6 +27,12 @@ export class BrandService{
 
     async delete(id:number):Promise<void | Error>{
         try{
+
+            const brand = await this.getOne(id);
+
+            if(brand.products.length > 0 || brand.vehicles.length > 0)
+                throw new Error("This brand can't be deleted!")
+
             await prisma.brands.delete({where:{id:id}})
         }catch(e){
             console.log(e)
@@ -34,7 +40,7 @@ export class BrandService{
         }
     }
 
-    async update({id,classType,name,prefix}:BrandServiceData):Promise<Brands | Error>{
+    async update({id,classType,name,prefix}:BrandServiceData):Promise<Brands>{
         try{
             return await prisma.brands.update(
                 {
@@ -52,16 +58,21 @@ export class BrandService{
         }
     }
 
-    async getOne(id:number):Promise<Brands | Error>{
+    async getOne(id:number):Promise<Brands>{
         try{
-            return await prisma.brands.findUnique({where:{id:id}})
+            return await prisma.brands.findUnique(
+                {
+                    where:{id:id},
+                    include:{products:true,vehicles:true}
+                }
+            )
         }catch(e){
             console.log(e)
             throw new Error('Err to find brand!')
         }
     }
 
-    async getAll():Promise<Brands[] | Error >{
+    async getAll():Promise<Brands[]>{
         try{
             return await prisma.brands.findMany()
         }catch(e){
